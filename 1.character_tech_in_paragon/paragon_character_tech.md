@@ -102,10 +102,13 @@ UE4中默认的PBS材质参数有**BaseColor**（基础色）、**Metallic**（�
 #### 制作PBS材质
 
 ![](images/pbs/pbs_substance_ue4.png)
+![](images/pbs/pbs_substance_ue4_workflow.png)
 
 在PBR的制作流程中，我们同样需要对PBR支持比较到位的工具链，**Substance Painter**的默认工作流即支持UE4的PBR流程，在PBR素材制作中较为推荐使用。
 
 ### UE4中分层材质
+
+![](images/pbs/maskset.png)
 
 由于PBS模型的各参数是线性的，因而可以通过线性混合或者蒙版方法实现[任意层材质的叠加或分层][12]。
 
@@ -248,7 +251,9 @@ Paragon中的头发光线传播模型是基于[Marschner][4]的单条头发路�
 
 ![](images/pbs/hair/trt_r_tt.png)
 
-R, TRT, TT
+* R: 直接反射路径，主要反射高光。
+* TRT: 折射-反射-折射路径，光线通过该路径穿入头发丝，在发丝内表面反射，然后折射出去，产生次要反射高光。
+* TT: 折射-折射路径，代表光线在大量头发中进行散射的过程。
 
 #### Marschner’s 模型分解
 
@@ -286,11 +291,27 @@ Epic的实现直接采用了高斯函数来近似表示径向反射的能量分�
 
 ![](images/pbs/hair/m_g.png)
 
-##### 截面散射函数NR
+##### 截面散射函数Nr (直接反射路径)
 
-##### 截面散射函数NTRT
+![](images/pbs/hair/Nr.png)
 
-##### 截面散射函数NTT
+##### 截面散射函数Ntt,trt
+
+![](images/pbs/hair/Ntt,trt.png)
+
+##### 截面散射函数Ntrt（内部反射再次折射路径）
+
+![](images/pbs/hair/Ntrt.png)
+
+##### 截面散射函数NTT（两次折射路径）
+
+![](images/pbs/hair/Ntt_h.png)
+
+![](images/pbs/hair/Ntt_n.png)
+
+![](images/pbs/hair/Ntt_t.png)
+
+![](images/pbs/hair/Ntt_d.png)
 
 #### Weta vs Epic
 
@@ -311,17 +332,20 @@ Epic的实现直接采用了高斯函数来近似表示径向反射的能量分�
 |![](images/pbs/hair/textures/root.png)|发根-发梢渐变贴图||
 |![](images/pbs/hair/textures/depth.png)|深度贴图|用于像素深度，让头发更有层次感，减少大面积的高光。|
 
-#### 头发透明度和抗锯齿
+### 头发各向异性高光表现实现（Anisotropic Specularity）
 
-### 头发各向异性高光（Anisotropic Specularity）
+#### 切线贴图/FlowMap
 
+![](images/pbs/hair/anisotropic_ref.png)
 
-#### FlowMap切线贴图
-
+> Tangent可以用于各向异性反射的渲染。
 
 ![](images/pbs/hair/tangent.png)
 
 ![](images/pbs/hair/flowmap.gif)
+
+> flowmap可以让部分头发丝看起来更弯曲，它代表头发在切线空间移动的方向，可以影响头发的反射。
+
 
 #### 使用像素深度偏移
 
@@ -331,7 +355,7 @@ Epic的实现直接采用了高斯函数来近似表示径向反射的能量分�
 
 ![](images/pbs/hair/pdo_compare.gif)
 
-### 眼球着色
+<!-- ### 眼球着色
 
 ![](images/eye/eye_ball.png)
 
@@ -357,7 +381,7 @@ Epic的实现直接采用了高斯函数来近似表示径向反射的能量分�
 
 ![](images/eye/eye_ball_uv.png)
 
-#### 眼球着色器参数
+#### 眼球着色器参数 -->
 
 
 
@@ -374,6 +398,7 @@ Epic的实现直接采用了高斯函数来近似表示径向反射的能量分�
 - [Screen-Space Perceptual Rendering of Human Skin][3]
 - [Distribution-based BRDFs][7]
 - [Crafting a Next-Gen Material Pipeline for The Order: 1886][8]
+- [Unreal Engine 4给Paragon角色赋予生命][13]
 
 [1]:https://www.epicgames.com/paragon
 [2]:http://blog.selfshadow.com/publications/s2013-shading-course/karis/s2013_pbs_epic_notes_v2.pdf
@@ -387,3 +412,4 @@ Epic的实现直接采用了高斯函数来近似表示径向反射的能量分�
 [10]:https://docs.unrealengine.com/latest/INT/Resources/Showcases/PhotorealisticCharacter/?utm_source=launcher&utm_medium=ue&utm_campaign=uelearn
 [11]:https://learnopengl.com/#!PBR/Theory
 [12]:https://www.cg.tuwien.ac.at/research/publications/2007/weidlich_2007_almfs/weidlich_2007_almfs-paper.pdf
+[13]:http://mp.weixin.qq.com/s/lF34ypY8pVnp_9W-WvC5kg
