@@ -157,7 +157,6 @@ UE4中默认的PBS材质参数有**BaseColor**（基础色）、**Metallic**（�
 	return Diff + Spec;
 ```
 
-Fuzz Color
 
 ### 布料的材质制作
 
@@ -165,7 +164,6 @@ Fuzz Color
 
 ![](images/pbs/cloth/scan_material.png)
 
-### 布料物理材质制作
 
 ## 次表面散射
 
@@ -313,16 +311,17 @@ Epic的实现直接采用了高斯函数来近似表示径向反射的能量分�
 
 ![](images/pbs/hair/Ntt_d.png)
 
-#### Weta vs Epic
+#### Weta方法于Epic实现的效果对比
 
 ![](images/pbs/hair/weta_epic_compare.gif)
 
-### 美术可控参数
-
 ### 头发素材制作
 
-
 ![](images/pbs/hair/mesh/geometry.png)
+
+> Paragon头发使用的是面片模型，配合AlphaTest渲染头发丝。
+
+### 美术可控参数
 
 |贴图|类型|说明|
 |:---:|:---:|:---|
