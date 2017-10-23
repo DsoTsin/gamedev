@@ -13,6 +13,11 @@ BodySetup是Component实现物理模拟和碰撞检测的代理类，它以简�
 因此为实现可动态改变的碰撞体，我们只要实现以下接口即可：
 
 ``` cpp
+    //------------- Physics State ---------------------------//
+    FBoxSphereBounds                CalcBounds(const FTransform& LocalToWorld) const override;
+    virtual void                    UpdateBodySetup();
+    virtual class UBodySetup*       GetBodySetup() override; // Physics Body Setup
+    //------------- End Physics -----------------------------//
     //-------------- Collision Data Provider -------------------//
     virtual bool GetPhysicsTriMeshData(struct FTriMeshCollisionData* CollisionData, bool InUseAllTriData) override;
     virtual bool ContainsPhysicsTriMeshData(bool InUseAllTriData) const override;
