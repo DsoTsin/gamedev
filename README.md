@@ -3,7 +3,12 @@
 - [Unreal Insights 系列](1.ue4_insights/ue4_insights.md)
 	- [《虚幻争霸》角色技术分析](1.ue4_insights/shading_models/paragon_character_tech.md)
 	- [LPV动态全局光技术](1.ue4_insights/global_illumination/lpv.md)
+	- [静态全局光照LightMass](global_illumination/light_mass.md)
 	- [渲染框架](1.ue4_insights/renderer_architect/renderer.md)
+	- [可见性裁剪](1.ue4_insights/visibility_determination/visibility.md)
+	- [地形渲染](1.ue4_insights/terrian_rendering/terrian.md)
+	- [植被渲染](1.ue4_insights/terrian_rendering/foliage.md)
+
 - [Kaleido3D开发日记](3.build_next_gen_gfx_lib/ReadMe.md)
 - [使用Clang构建C++反射框架](2.reflect_cpp_with_clang/reflect_cpp_with_clang.md)
 - SIGGRAPH2017游戏高级渲染技术
