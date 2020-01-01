@@ -7,5 +7,6 @@
 * [静态全局光照LightMass](global_illumination/light_mass.md)
 * [UE4的渲染框架](renderer_architect/renderer.md)
 * [可见性裁剪](visibility_determination/visibility.md)
+* [移动端的软光栅实现](software_occlusion/maksed_occlusion.md)
 * [地形渲染](terrian_rendering/terrian.md)
 * [植被渲染](terrian_rendering/foliage.md)
