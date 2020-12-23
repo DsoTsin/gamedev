@@ -26,7 +26,7 @@ UE4 Shader编程
 * ShaderResource绑定
 * Shader各平台编译
 
-## Uniform声明
+## C++代码中Uniform声明
 
 ```cpp
 BEGIN_GLOBAL_SHADER_PARAMETER_STRUCT(FClusterCullCommonParameters,)
@@ -47,9 +47,35 @@ IMPLEMENT_GLOBAL_SHADER_PARAMETER_STRUCT(FClusterCullCommonParameters, "CullComm
 //SetUniformBufferParameter
 ```
 
+## 材质的Uniform声明（数据驱动的方式）
+
+通过**FUniformExpressionSet**缓存的UniformExpression生成对应`CBuffer`和`Resources Declaration`
+
 ![](images/material_shader_param.png)
 
+![](images/shader_param_declaration.png)
+
+当然前面也需要UniformBuffer的填充（主要针对**Constants**）
+
+![](images/material_filluniform.png)
+
+
+## UE4材质编辑器如何从节点编辑器到最终的Shader？
+
+* 先看`HLSLMaterialTranslator`
+    ![](images/material_code_chunks.png)
+* 翻译**贴图采样**
+    ![](images/material_texture_param_translate.png)
+
+* 最终Material Shader的组装
+    ![](images/material_shader_uniform_assemble.png)
+
+* 运行时Shader动态Uniform参数的**更新**
+    ![](images/material_shader_uniform_buffer_update.png)
+
 ## Uniform绑定
+
+![](images/set_uav_from_uniform_buffer.png)
 
 ```cpp
 
