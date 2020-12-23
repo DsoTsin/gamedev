@@ -59,6 +59,7 @@ IMPLEMENT_GLOBAL_SHADER_PARAMETER_STRUCT(FClusterCullCommonParameters, "CullComm
 
 ![](images/material_filluniform.png)
 
+![](images/real_material_params.png)
 
 ## UE4材质编辑器如何从节点编辑器到最终的Shader？
 
