@@ -1,59 +1,77 @@
-# UE4的矩阵和数值计算
-
-UE4引擎开发需要了解的基本的3D数学
+# UE中的数学
 
 ---
 
 ## 矩阵的存储和运算
 
-透视投影矩阵的计算
-
-正交投影矩阵计算
-
-观察矩阵计算
+* 透视投影矩阵的计算
+* 正交投影矩阵计算
+* 观察矩阵计算
 
 > revertZ
 
-FTransform与FMatrix
-
-FRotator与FQuat（四元数旋转）
-
-CSM矩阵计算
+* FTransform与FMatrix
+* FRotator与FQuat（四元数旋转）
+* CSM矩阵计算
 
 ---
 
 ## 可见性计算
 
-FrustumCulling计算
-
-ScreenSize计算
-
-NormalCone的计算（GPU Driven Rendering）
+* FrustumCulling计算
+* ScreenSize计算
+* NormalCone的计算（GPU Driven Rendering）
 
 ---
 
-## 数学计算优化
+## 进阶数学
 
-牛顿迭代
-
-泰勒展开
-
-FFT、DFT计算
-
-流体模拟（拉格朗日、欧拉方法）
-
-球谐积分
-
-蒙特卡罗方法
-
-CurveFit
+* 数值计算方法
+    * 牛顿迭代
+    * 泰勒展开
+    * 高斯赛德尔解算
+* FFT计算（海洋模拟，频域分析）
+* 流体模拟（拉格朗日、欧拉方法）
+    * 梯度 散度 旋度
+    * 漂移 扩散 涡流
+* 球谐积分（光照计算）
+    * 旋转不变性
+* 蒙特卡罗积分
+    * 重要性采样
+* 降噪
+    * 时域分析
+    * 频域分析
+    * 蓝噪声
+* 数值拟合 （着色模型）
+    * CurveFit
+* 优化方法
+    * 主成分分析
+    * 最小二乘
+    * 凸优化
 
 ---
 
 ## 编程技能
 
-SIMD加速计算
-
-ispc编程
-
-compute shader编程
+* 底层
+    * cache
+    * 内存同步
+    * 协程
+    * 多线程
+    * SIMD编程
+        * ispc编程
+        * 指令使用
+    * GPU编程
+* 基本的GPU数据结构
+    * 3D纹理
+* 基本算法
+    * 树形结构
+    * 求交算法
+    * 内存管理分配算法
+        * slab
+        * 伙伴分配
+    * 背包问题（负载问题）
+    * 堆
+    * 排序
+        * 基数排序
+        * 双调排序
