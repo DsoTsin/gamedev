@@ -17,7 +17,7 @@
 
 ---
 
-* MaterialInstance方式对**uber masterial**的支持力度不够
+* MaterialInstance方式对**uber material**的支持力度不够
 * **数据驱动**的渲染支持不够（材质描述方式对数据驱动的改造不友好，虽然有PrimitiveCustomData支持）
 * StaticMesh数量过多的场景渲染对CPU负担较大，面数复杂度高的StaticMesh对GPU负担大（虽然UE5**一部分**解决了该问题）
 * HISM针对性的优化力度不够，还需要针对性地管理内存，剔除和渲染：
