@@ -8,6 +8,10 @@
 	- [可见性裁剪](1.ue4_insights/visibility_determination/visibility.md)
 	- [地形渲染](1.ue4_insights/terrian_rendering/terrian.md)
 	- [植被渲染](1.ue4_insights/terrian_rendering/foliage.md)
+	- [虚拟纹理和SparseTexture]()
+	- [虚拟阴影和SparseShadowMap]()
+	- [虚拟几何体和MeshShading]()
+	- [LumenGI和SVO]()
 
 - [Kaleido3D开发日记](3.build_next_gen_gfx_lib/ReadMe.md)
 - [使用Clang构建C++反射框架](2.reflect_cpp_with_clang/reflect_cpp_with_clang.md)
@@ -22,3 +26,4 @@
 - ISPC加速场景结构管理和剔除
 - [终极CPU/GPU混合驱动管线](9.optimization/UltraCPUGPUHybridDrivenPipeline.md)
 - [让UE4D3D12RHI支持Bindless资源](9.optimization/BindlessImplementOnUE4.md)
+- [UE4/5的优缺点分析](8.misc/ue4_dis_and_fut.md)
