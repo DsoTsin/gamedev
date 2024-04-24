@@ -15,11 +15,13 @@
             * Max probes per sector
         * "Initial tetrahedralization of probes"
         * "Render GI Probes"
+            * 六面捕捉，为每个Probe收集材质属性
         * "Clean After GI Probes"
         * "Merge TetStructures"
         * "Process GI Bricks"
         * "Generate DepthMap"
         * "RayTrace Surfel-Probe"
+            * Surfel和Brick的关系
             * Collect surfels
         * "Generate Save Data.. Save header"
         * "Generate Save Data.. Processing Surfels"

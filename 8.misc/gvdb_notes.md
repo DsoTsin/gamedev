@@ -66,37 +66,39 @@ LoadFunction ( FUNC_UPDATEAPRONFACES_F, "gvdbUpdateApronFacesF",		MODL_PRIMARY, 
 GPU的构建逻辑：
 
 * ActivateBricksGPU
-    * CUDA::FUNC_CALC_BRICK_ID, 计算Brick的ID
-    * Voxel点云排序
-    * CUDA::FUNC_FIND_UNIQUE
+    * CUDA::FUNC_CALC_BRICK_ID, 计算Brick的ID（在每一层的ID）
+    * Voxel点云排序（对每一层的Brick按ID排序）
+    * CUDA::FUNC_FIND_UNIQUE，针对每一层找出唯一的Brick
     * CUDA::AUX_UNIQUE_CNT
     * CUDA::FUNC_PREFIXSUM
     * CUDA::FUNC_PREFIXFIXUP
-    * CUDA::FUNC_COMPACT_UNIQUE
+    * CUDA::FUNC_COMPACT_UNIQUE，对Brick的数据去重
     ![](images/gvdb_activate_bricks.png)
     ![](images/gvdb_build_alloc_resources.png)
-    * CUDA::FUNC_LINK_BRICKS
-      对每一层的Brick链接
+    * CUDA::FUNC_LINK_BRICKS，**如何连接各层的Brick？**
     ![](images/gvdb_build_link_bricks.png)
         ```cuda
-        // link node
+        // link node，自底向上
         extern "C" __global__ void gvdbLinkBricks ( VDBInfo* gvdb, int lev)
         {
             int i = blockIdx.x * blockDim.x + threadIdx.x;
             if ( i >= gvdb->nodecnt[ lev ] ) return;
 
+            // 获取当前层的Brick节点
             VDBNode* node = getNode ( gvdb, lev, i);
 
             if (!node->mFlags) return;
-            uint64 pnodeId = getParent( gvdb, lev+1, node->mPos);
-            if (pnodeId == ID_UNDEFL) return;
 
-            VDBNode* pnode = getNode ( gvdb, lev+1, pnodeId);
+            // 获取当前层该节点的父节点
+            uint64 parentNodeId = getParent( gvdb, lev+1, node->mPos);
+            if (parentNodeId == ID_UNDEFL) return;
+
+            VDBNode* parentNode = getNode ( gvdb, lev+1, parentNodeId);
 
             int res = gvdb->res[lev+1];
             int3 range = gvdb->noderange[lev+1];
 
-            int3 posInNode = node->mPos - pnode->mPos;
+            int3 posInNode = node->mPos - parentNode->mPos;
             posInNode *= res;
             posInNode.x /= range.x;
             posInNode.y /= range.y;
@@ -105,18 +107,49 @@ GPU的构建逻辑：
             
             if (posInNode.x > res || posInNode.x < 0 || posInNode.y > res || posInNode.y < 0 || posInNode.z > res || posInNode.z < 0) return;
 
-            // set mParent in node
-            node->mParent = ((pnodeId << 16) | ((lev+1) << 8));	// set parent of child
+            // set mParent in node，设置父节点索引
+            node->mParent = ((parentNodeId << 16) | ((lev+1) << 8));	// set parent of child
 
-            uint64 listid = pnode->mChildList;
-            uint64 cndx = listid >> 16;
-            if (cndx >= gvdb->nodecnt[ lev+1 ]) return;
+            // 父节点的子节点的维护
+            uint64 listid = parentNode->mChildList;
+            uint64 cndx = listid >> 16; // What does `cndx` mean? 子节点List（起点）在该层的索引，（64个）
+            if (cndx >= gvdb->nodecnt[ lev+1 ]/* 父层节点的总数 */) return;
+
+            // int	childwid[MAXLEV]; Size of the child list per node at each level in bytes
+            // **childlist** GPU pointer to each level's pool group 1 (child lists)
             uint64* clist = (uint64*) (gvdb->childlist[lev+1] + cndx*gvdb->childwid[lev+1]);
-
-            *(clist + bitMaskPos) = ((uint64(i) << 16) | (uint64(lev) << 8));
+            // i是该层的全局的索引
+            *(clist + bitMaskPos) = ((uint64(i) << 16) | (uint64(lev) << 8)); // 标记那一层和在该层的节点号
 
         }
         ```
+
+
+### 访问子节点
+```cuda
+inline __device__ int getChild ( VDBNode* node, int b )
+{	
+	int n = countOn ( node, b ); // With mask
+	uint64 listid = node->mChildList;
+	if (listid == ID_UNDEFL) return ID_UNDEF64;
+	uchar clev = uchar( (listid >> 8) & 0xFF );
+	int cndx = listid >> 16;
+	uint64* clist = (uint64*) (gvdb.childlist[clev] + cndx*gvdb.childwid[clev]);
+	int c = (*(clist + n)) >> 16;
+	return c;
+}
+
+inline __device__ int getChild ( VDBInfo* gvdb, VDBNode* node, int b )
+{	
+	uint64 listid = node->mChildList;
+	if (listid == ID_UNDEFL) return ID_UNDEF64;
+	uchar clev = uchar( (listid >> 8) & 0xFF );
+	int cndx = listid >> 16;
+	uint64* clist = (uint64*) (gvdb->childlist[clev] + cndx*gvdb->childwid[clev]);
+	int c = (*(clist + b)) >> 16;
+	return c;
+}
+```
 
 * 核心CUDA代码位于 `gvdb_library/src/cuda_gvdb_nodes.cuh`
 
@@ -173,3 +206,59 @@ extern "C" __global__ void prefixSum ( uint* input, uint* output, uint* aux, int
 }
 ```
 
+### 访问父节点
+```cuda
+inline __device__ uint64 getParent( VDBInfo* gvdb, int stopLev, int3 pos)
+{
+	VDBNode* nd = getNode ( gvdb, gvdb->top_lev, 0);	// get root
+
+	if (!nd->mFlags) return 0;
+
+	int l = nd->mLev;
+	if (l < 0) return 0;
+	if (l == stopLev) return 0;	// root id
+
+	int3 range, posInNode;
+	int bitMaskPos;
+	uint64 childId;
+	while (l > stopLev)
+	{
+		int res = gvdb->res[l];
+		range = gvdb->noderange[l];
+		posInNode = pos - nd->mPos;//sortedPos[n] + pOrig - nd->mPos; 
+		posInNode *= res;
+		posInNode.x /= range.x;
+		posInNode.y /= range.y;
+		posInNode.z /= range.z;
+		bitMaskPos = (posInNode.z*res + posInNode.y)*res + posInNode.x;
+
+#ifdef USE_BITMASKS
+		uint64 p = nd->countOn ( bitMaskPos );
+
+		l--;
+
+		uint64* clist = mPool->PoolData64(nd->mChildList);
+		if (l == lev) return clist[p];
+
+		nd = getNode( gvdb, clist[p] );
+#else
+		l--;
+
+		childId = getChild( gvdb, nd, bitMaskPos);
+
+		if (childId == ID_UNDEFL) return ID_UNDEFL;
+
+		if(l == stopLev) return childId;
+
+		nd = getNode( gvdb, l, childId);
+#endif
+	}
+
+	return ID_UNDEFL;
+}
+```
+
+
+# HDDA原理
+
+分层DDA
