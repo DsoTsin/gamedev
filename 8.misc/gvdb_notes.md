@@ -69,9 +69,10 @@ GPU的构建逻辑：
     * CUDA::FUNC_CALC_BRICK_ID, 计算Brick的ID（在每一层的ID）
     * Voxel点云排序（对每一层的Brick按ID排序）
     * CUDA::FUNC_FIND_UNIQUE，针对每一层找出唯一的Brick
-    * CUDA::AUX_UNIQUE_CNT
-    * CUDA::FUNC_PREFIXSUM
-    * CUDA::FUNC_PREFIXFIXUP
+    * CUDA::AUX_UNIQUE_CNT，计算每一层的唯一Brick数目
+    * 排序
+        * CUDA::FUNC_PREFIXSUM
+        * CUDA::FUNC_PREFIXFIXUP
     * CUDA::FUNC_COMPACT_UNIQUE，对Brick的数据去重
     ![](images/gvdb_activate_bricks.png)
     ![](images/gvdb_build_alloc_resources.png)
