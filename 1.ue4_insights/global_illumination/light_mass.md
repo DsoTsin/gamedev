@@ -62,8 +62,16 @@ int32 ErrorCode = Swarm.BeginJobSpecification( JobSpecification32, JobSpecificat
 
 ### Lightmass代码拆解
 
+Embree 参与了什么工作？
+![](images/lightmass_embree.png)
+
 #### Editor 导出部分
 
+为什么要写文件？文件发挥了什么作用？
+
+`Programs\UnrealLightmass\Public\ImportExport.h`
+
+![](images/lightmass_exporter.png)
 
 #### Lightmass 烘焙部分
 
@@ -79,7 +87,7 @@ void FStaticLightingSystem::EmitDirectPhotons(
 	GSwarm->SendMessage( NSwarm::FTimingMessage( NSwarm::PROGSTATE_Preparing0, 0 ) );
 ```
 
-Texture Mapping，软件光栅化，SurfaceCache
+Texture Mapping（有Embree加速），软件光栅化，SurfaceCache
 
 
 
@@ -93,6 +101,10 @@ Texture Mapping，软件光栅化，SurfaceCache
 
 
 CUDA加速部分
+
+optix engine能参与哪部分工作？
+
+optix
 
 ISPC AVX512加速部分
 
