@@ -55,4 +55,9 @@
 * giProbeSectorsGenerator.cpp
     * ProbeSectorsGenerator
 
+# 运行时
 
+* `include_gi.fx` CalcGI 四面体Probe插值
+    * tetraAccelVolume (start & slot ) 3D
+* `globalIlluminationCalculate.fx`
+    * pixelPos -> GIVolumeGroup
