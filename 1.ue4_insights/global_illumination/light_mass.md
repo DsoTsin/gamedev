@@ -125,3 +125,8 @@ ISPC AVX512加速部分
 ## 可分布式计算部分
 
 ## IncrediBuild 集成统一调度
+
+
+## Unbuilt Objects
+
+![](images/lightmass_unbuilt.png)
